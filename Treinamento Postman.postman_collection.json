@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "aeb6ed85-294d-4d0b-8f89-d84764e94aa1",
+		"name": "Treinamento Postman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Busca playLists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "41077344-d3b4-49b5-a18f-2bd7e4dd69b6",
+						"exec": [
+							"if (responseCode.code !== 401){",
+							"    if (responseCode.code == 200){",
+							"        let listaPlaylist = JSON.parse(responseBody)",
+							"        let encontrou = false",
+							"        ",
+							"        listaPlaylist.items.forEach((campo) => {",
+							"            if(campo.name === environment.namePlaylist){",
+							"                pm.test(\"Playlist encontrada: \" + environment.namePlaylist, () => pm.response.to.have.status(200))",
+							"                encontrou = true",
+							"                postman.setEnvironmentVariable(\"$playlist_Id\", campo.id)",
+							"            }",
+							"        })",
+							"        if(!encontrou){",
+							"            pm.test(\"Não foi encontrada a playlist\", () => pm.response.to.have.jsonBody(\"Não foi encontrada aplaylist\"))",
+							"        }",
+							"    }",
+							"}else{",
+							"    console.log(\"Autenticação não realizada\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{$access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/me/playlists",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"me",
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca nome da musica",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9cbc5873-592c-4268-866e-9b6b4045a3fb",
+						"exec": [
+							"if (responseCode.code !== 401){\r",
+							"    if (responseCode.code == 200){\r",
+							"        let listaTracks = JSON.parse(responseBody)\r",
+							"        let encontrou = false\r",
+							"        \r",
+							"        listaTracks.items.forEach((campo) => {\r",
+							"            if(campo.track.name === environment.nameTrack){\r",
+							"                pm.test(\"Track \"+environment.nameTrack+\" foi encontrada na playlist\", () => pm.response.to.have.status(200)) \r",
+							"                encontrou = true\r",
+							"                postman.setEnvironmentVariable(\"$track_Id\", campo.track.id)\r",
+							"            }\r",
+							"        })\r",
+							"        if(!encontrou){\r",
+							"            pm.test(\"Track \"+environment.nameTrack+\" não foi encontrada\", () => pm.response.to.have.jsonBody(\"Track não encontrda :(\"))\r",
+							"        }\r",
+							"        \r",
+							"        pm.test(\"Número de musicas na playlist é igual: \"+ environment.numTracks, () => {\r",
+							"            pm.expect(listaTracks.items).to.have.lengthOf(environment.numTracks)\r",
+							"        })\r",
+							"    }\r",
+							"    \r",
+							"}else{\r",
+							"    console.log(\"Autenticação não realizada\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{$access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/playlists/{{$playlist_Id}}/tracks",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"playlists",
+						"{{$playlist_Id}}",
+						"tracks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca Artista",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1990f121-fdcc-44c0-a85d-0393980ff2b7",
+						"exec": [
+							"if(responseCode !== 401)",
+							"{",
+							"    if(responseCode === 200)",
+							"    {",
+							"        let listaArtistas = JSON.parse(responseBody)",
+							"        let encontrou = faslse",
+							"        listaArtistas.itemsforEach((campo) => {",
+							"            if(campo.track.artists.name === environment.nameArtist){",
+							"            pm.test(\"Artista \"+environment.nameArtist+\" foi encontrada na playlist\", () => pm.response.to.have.status(200)) ",
+							"                encontrou = true",
+							"            }",
+							"        })",
+							"    if(!encontrou){",
+							"            pm.test(\"Artista \"+environment.nameArtist+\" não foi encontrada\", () => pm.response.to.have.jsonBody(\"Artista não encontrado :(\"))",
+							"        }",
+							"    }",
+							"}",
+							"else{",
+							"    console.log(\"Autenticação não realizada\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{$access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/tracks/{{$track_Id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tracks",
+						"{{$track_Id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adicionar musica a playlist",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0c8d2d0b-93b7-46de-bb0b-47640d2ed281",
+						"exec": [
+							"let url_busca = environment.URL + \"/playlists/\" + environment.$playlist_Id + \"/tracks\"\r",
+							"postman.setEnvironmentVariable(\"$encontrouMusica\", false)\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"        url: url_busca,\r",
+							"        method: \"GET\",\r",
+							"        header: {\r",
+							"            \"Accept\": \"application/json\",\r",
+							"            \"Content-Type\": \"application/json\",\r",
+							"            \"Authorization\": \"Bearer \" + environment.$access_token\r",
+							"        }\r",
+							"    }, function (err, response) {\r",
+							"        response.json().items.forEach((campo) => {\r",
+							"            if(campo.track.name === environment.nameTrackProcura){\r",
+							"                postman.setEnvironmentVariable(\"$encontrouMusica\", true)\r",
+							"            }  \r",
+							"        })\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0494d7ce-d65c-4516-8484-c9a366c47f0d",
+						"exec": [
+							"let url_busca = environment.URL + \"/playlists/\" + environment.$playlist_Id + \"/tracks\"\r",
+							"\r",
+							"if (responseCode.code !== 401){\r",
+							"    if(!environment.$encontrouMusica){\r",
+							"        \r",
+							"        pm.sendRequest({\r",
+							"        url: url_busca,\r",
+							"        method: \"GET\",\r",
+							"        header: {\r",
+							"            \"Accept\": \"application/json\",\r",
+							"            \"Content-Type\": \"application/json\",\r",
+							"            \"Authorization\": \"Bearer \" + environment.$access_token\r",
+							"        }\r",
+							"    }, function (err, response) {\r",
+							"        response.json().items.forEach((campo) => {\r",
+							"            if(campo.track.name === environment.nameTrackProcura){\r",
+							"                pm.test(\"A musica foi adicionada com sucesso\", () => pm.response.to.have.status(201))\r",
+							"            }  \r",
+							"        })\r",
+							"});\r",
+							"        \r",
+							"    }else{\r",
+							"        pm.test(\"A musica foi encontrada\", () => pm.response.to.have.jsonBody(\"Já existia a musica\"))\r",
+							"    }\r",
+							"    \r",
+							"    \r",
+							"    \r",
+							"}else{\r",
+							"    console.log(\"Autenticação não realizada\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{$access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"uris\":[\n\t\t\"spotify:track:6wfK1R6FoLpmUA9lk5ll4T\"\n\t\t]\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/playlists/{{$playlist_Id}}/tracks",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"playlists",
+						"{{$playlist_Id}}",
+						"tracks"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
